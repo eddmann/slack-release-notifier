@@ -1,0 +1,23 @@
+name: 'Slack Release Notifier'
+description: 'Send a release Slack message after publishing or successful deployment'
+inputs:
+  slackTitle:
+    description: 'What the message title should be'
+    required: true
+    default: 'Your changes are live!'
+  slackHeading:
+    description: 'What the message heading should be'
+    required: true
+    default: 'Gone Live - {tag_name}'
+  slackWebhookEndpointUrl:
+    description: 'The Slack webhook to send the release message to'
+    required: true
+  gitHubSlackUserLookup:
+    description: 'Lookup JSON object between GitHub username to Slack Memeber Id'
+    default: '{}'
+  GITHUB_TOKEN:
+    description: 'Used to fetch the release upon successful deployment events'
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
