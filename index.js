@@ -1,6 +1,7 @@
 const fs = require('fs');
+const util = require('util');
 const core = require('@actions/core');
-const request = require('request');
+const request = util.promisify(require('request'));
 const { Octokit } = require('@octokit/action');
 
 const fetchReleaseForEvent = async event => {
