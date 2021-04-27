@@ -36,6 +36,8 @@ const toSlackUserMentions = message => {
   );
 };
 
+const toSections = message => message.split('\r\n\r\n\r\n\r\n\r\n');
+
 async function run() {
   try {
     const release = await fetchReleaseForEvent(
@@ -62,13 +64,15 @@ async function run() {
             ),
           },
         },
-        {
+        ...toSections(
+          toSlackUserMentions(toSlackHeadings(release.body))
+        ).map(content => ({
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: toSlackUserMentions(toSlackHeadings(release.body)),
+            text: content,
           },
-        },
+        })),
         {
           type: 'actions',
           elements: [

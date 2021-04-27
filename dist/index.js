@@ -6,8 +6,9 @@ require('./sourcemap-register.js');module.exports =
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 const fs = __webpack_require__(5747);
+const util = __webpack_require__(1669);
 const core = __webpack_require__(2186);
-const request = __webpack_require__(8699);
+const request = util.promisify(__webpack_require__(8699));
 const { Octokit } = __webpack_require__(1231);
 
 const fetchReleaseForEvent = async event => {
@@ -42,6 +43,8 @@ const toSlackUserMentions = message => {
   );
 };
 
+const toSections = message => message.split('\r\n\r\n\r\n\r\n\r\n');
+
 async function run() {
   try {
     const release = await fetchReleaseForEvent(
@@ -68,13 +71,15 @@ async function run() {
             ),
           },
         },
-        {
+        ...toSections(
+          toSlackUserMentions(toSlackHeadings(release.body))
+        ).map(content => ({
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: toSlackUserMentions(toSlackHeadings(release.body)),
+            text: content,
           },
-        },
+        })),
         {
           type: 'actions',
           elements: [
