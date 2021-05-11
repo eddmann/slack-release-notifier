@@ -1,7 +1,6 @@
 const fs = require('fs');
-const util = require('util');
 const core = require('@actions/core');
-const request = util.promisify(require('request'));
+const axios = require('axios');
 const { Octokit } = require('@octokit/action');
 
 const fetchReleaseForEvent = async event => {
@@ -36,6 +35,8 @@ const toSlackUserMentions = message => {
   );
 };
 
+const removeImages = message => message.replace(/<img[^>]+\>/g, '');
+
 const toSections = message => message.split('\r\n\r\n\r\n\r\n\r\n');
 
 async function run() {
@@ -65,7 +66,9 @@ async function run() {
           },
         },
         ...toSections(
-          toSlackUserMentions(toSlackHeadings(release.body))
+          toSlackUserMentions(
+            toSlackHeadings(removeImages(release.body))
+          )
         ).map(content => ({
           type: 'section',
           text: {
@@ -89,12 +92,15 @@ async function run() {
       ],
     };
 
-    await request.post(core.getInput('slackWebhookEndpointUrl'), {
-      'Content-Type': 'application/json',
-      body: JSON.stringify(message),
+    await axios({
+      headers: { 'Content-Type': 'application/json' },
+      url: core.getInput('slackWebhookEndpointUrl'),
+      method: 'POST',
+      data: JSON.stringify(message),
     });
   } catch (error) {
     core.setFailed(error.message);
+    core.info(JSON.stringify(error.response.data));
   }
 }
 
