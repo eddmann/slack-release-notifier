@@ -13,7 +13,7 @@ const fetchReleaseForEvent = async event => {
       {
         owner,
         repo,
-        tag: event.deployment.ref,
+        tag: event.deployment.ref.replace('refs/tags/', ''),
       }
     );
 
