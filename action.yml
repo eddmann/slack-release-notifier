@@ -13,11 +13,11 @@ inputs:
     description: 'The Slack webhook to send the release message to'
     required: true
   gitHubSlackUserLookup:
-    description: 'Lookup JSON object between GitHub username to Slack Memeber Id'
+    description: 'Lookup JSON object between GitHub username to Slack Member Id'
     default: '{}'
   GITHUB_TOKEN:
     description: 'Used to fetch the release upon successful deployment events'
     required: false
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
